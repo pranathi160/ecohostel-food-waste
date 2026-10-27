@@ -1,8 +1,1351 @@
-#!/usr/bin/env sh # # Copyright (c) Microsoft Corporation. All rights reserved. # Licensed under the MIT License. See License.txt in the project root for license information. if [ "$VSCODE_WSL_DEBUG_INFO" = true ]; then set -x fi COMMIT="072586267e68ece9a47aa43f8c108e0dcbf44622"
-APP_NAME="code" QUALITY="stable" NAME="Code" SERVERDATAFOLDER=".vscode-server" VERSIONFOLDER="072586267e" VSCODE_PATH="$(dirname "$(dirname "$(realpath "$0")")")" ELECTRON="$VSCODE_PATH/$NAME.exe" IN_WSL=false if [ -n "$WSL_DISTRO_NAME" ]; then # $WSL_DISTRO_NAME
-is available since WSL builds 18362, also for WSL2 IN_WSL=true else WSL_BUILD=$(uname -r | sed -E 's/^[0-9.]+-([0-9]+)-Microsoft.*|.*/\1/') if [ -n "$WSL_BUILD" ]; then if [ "$WSL_BUILD" -ge 17063 ]; then # WSLPATH is available since WSL build 17046 #
-WSLENV is available since WSL build 17063 IN_WSL=true else # If running under older WSL, don't pass cli.js to Electron as # environment vars cannot be transferred from WSL to Windows # See: https://github.com/microsoft/BashOnWindows/issues/1363 # https://github.com/microsoft/BashOnWindows/issues/1494
-"$ELECTRON" "$@" exit $? fi fi fi if [ $IN_WSL = true ]; then export WSLENV="ELECTRON_RUN_AS_NODE/w:$WSLENV" CLI=$(wslpath -m "$VSCODE_PATH/$VERSIONFOLDER/resources/app/out/cli.js") # use the Remote WSL extension if installed WSL_EXT_ID="ms-vscode-remote.remote-wsl"
-ELECTRON_RUN_AS_NODE=1 "$ELECTRON" "$CLI" --locate-extension $WSL_EXT_ID >/tmp/remote-wsl-loc.txt 2>/dev/null </dev/null WSL_EXT_WLOC=$(cat /tmp/remote-wsl-loc.txt) if [ -n "$WSL_EXT_WLOC" ]; then # replace \r\n with \n in WSL_EXT_WLOC WSL_CODE=$(wslpath
-    -u "${WSL_EXT_WLOC%%[[:cntrl:]]}")/scripts/wslCode.sh "$WSL_CODE" "$COMMIT" "$QUALITY" "$ELECTRON" "$APP_NAME" "$SERVERDATAFOLDER" "$@" exit $? fi elif [ -x "$(command -v cygpath)" ]; then CLI=$(cygpath -m
-    "$VSCODE_PATH/$VERSIONFOLDER/resources/app/out/cli.js") else CLI="$VSCODE_PATH/$VERSIONFOLDER/resources/app/out/cli.js" fi ELECTRON_RUN_AS_NODE=1 "$ELECTRON" "$CLI" "$@" exit $?
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoHostel | Smart Food Waste Command Center</title>
+    <style>
+         :root {
+            --bg: #071711;
+            --panel: #10251c;
+            --panel2: #163327;
+            --green: #69f0ae;
+            --mint: #b9ffdc;
+            --text: #f0fff7;
+            --muted: #9ab8a7;
+            --line: #28533d;
+            --gold: #ffd166;
+            --red: #ff7777;
+            --shadow: 0 18px 45px #0005
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            background: radial-gradient(ellipse at 10% 0%, #17452d 0, transparent 38%), radial-gradient(ellipse at 100% 20%, #123b31 0, transparent 32%), var(--bg);
+            color: var(--text);
+            font: 15px/1.55 Inter, "Segoe UI", Arial, sans-serif;
+            min-height: 100vh
+        }
+        
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit
+        }
+        
+        button {
+            cursor: pointer;
+            transition: .2s
+        }
+        
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid var(--gold);
+            outline-offset: 2px
+        }
+        
+        .hidden {
+            display: none!important
+        }
+        
+        .auth {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1.05fr .95fr;
+            align-items: center;
+            gap: 5vw;
+            padding: clamp(24px, 6vw, 90px)
+        }
+        
+        .brand-side {
+            max-width: 650px
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            letter-spacing: .08em;
+            color: var(--mint)
+        }
+        
+        .logo-mark {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 15px;
+            background: var(--green);
+            color: #052215;
+            font-size: 25px;
+            box-shadow: 0 0 35px #69f0ae44
+        }
+        
+        .eyebrow {
+            color: var(--green);
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .2em;
+            text-transform: uppercase
+        }
+        
+        .brand-side h1 {
+            font-size: clamp(2.5rem, 5.6vw, 5.4rem);
+            line-height: .98;
+            letter-spacing: -.06em;
+            margin: 24px 0
+        }
+        
+        .brand-side h1 span {
+            color: var(--green)
+        }
+        
+        .brand-side p {
+            color: var(--muted);
+            max-width: 520px;
+            font-size: 1.05rem
+        }
+        
+        .feature-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 28px
+        }
+        
+        .chip {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 13px;
+            color: var(--mint);
+            background: #ffffff06;
+            font-size: .85rem
+        }
+        
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            justify-self: center;
+            padding: clamp(24px, 4vw, 38px);
+            border: 1px solid #ffffff1a;
+            border-radius: 28px;
+            background: linear-gradient(145deg, #163628f5, #0c2018f5);
+            box-shadow: var(--shadow)
+        }
+        
+        .auth-card h2 {
+            font-size: 1.9rem;
+            margin: 8px 0 4px
+        }
+        
+        .auth-card .muted {
+            color: var(--muted);
+            margin: 0 0 22px
+        }
+        
+        .field {
+            margin: 14px 0
+        }
+        
+        .field label {
+            display: block;
+            font-size: .85rem;
+            color: #d6f2e2;
+            font-weight: 700;
+            margin-bottom: 7px
+        }
+        
+        .field input,
+        .field select,
+        .field textarea,
+        .toolbar input,
+        .toolbar select {
+            width: 100%;
+            background: #071711;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            color: var(--text);
+            padding: 12px 13px
+        }
+        
+        .field input::placeholder,
+        .toolbar input::placeholder {
+            color: #719180
+        }
+        
+        .btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 16px;
+            font-weight: 800;
+            background: var(--green);
+            color: #062416
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.06)
+        }
+        
+        .btn.secondary {
+            background: #214b36;
+            color: var(--mint);
+            border: 1px solid #326748
+        }
+        
+        .btn.danger {
+            background: #572b30;
+            color: #ffd4d4
+        }
+        
+        .btn.small {
+            padding: 7px 10px;
+            font-size: .82rem;
+            border-radius: 9px
+        }
+        
+        .full {
+            width: 100%;
+            margin-top: 8px
+        }
+        
+        .auth-msg,
+        .msg {
+            min-height: 1.3em;
+            color: var(--gold);
+            font-size: .88rem;
+            margin-top: 10px
+        }
+        
+        .tiny {
+            font-size: .78rem;
+            color: var(--muted)
+        }
+        
+        .demo {
+            padding: 12px;
+            background: #071711;
+            border: 1px dashed #3c7654;
+            border-radius: 12px;
+            color: var(--muted);
+            font-size: .82rem;
+            margin-top: 16px
+        }
+        
+        .app {
+            min-height: 100vh
+        }
+        
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px clamp(16px, 4vw, 48px);
+            background: #071711eF;
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid #ffffff14
+        }
+        
+        .topbar .logo {
+            font-size: .95rem
+        }
+        
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+        
+        .avatar {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--green);
+            color: #062416;
+            font-weight: 900
+        }
+        
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--mint);
+            font-size: .88rem
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 230px minmax(0, 1fr);
+            max-width: 1600px;
+            margin: auto
+        }
+        
+        .sidebar {
+            padding: 24px 14px;
+            border-right: 1px solid #ffffff12;
+            min-height: calc(100vh - 65px)
+        }
+        
+        .nav-label {
+            color: #6f9880;
+            text-transform: uppercase;
+            font-size: .7rem;
+            font-weight: 900;
+            letter-spacing: .17em;
+            padding: 10px 12px
+        }
+        
+        .nav {
+            width: 100%;
+            text-align: left;
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 3px 0;
+            font-weight: 700
+        }
+        
+        .nav:hover,
+        .nav.active {
+            background: #1c3d2c;
+            color: var(--green)
+        }
+        
+        .nav span {
+            display: inline-block;
+            width: 27px
+        }
+        
+        .main {
+            padding: clamp(18px, 3vw, 38px);
+            min-width: 0
+        }
+        
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 24px
+        }
+        
+        .page-head h1 {
+            font-size: clamp(1.7rem, 3vw, 2.7rem);
+            line-height: 1.1;
+            margin: 7px 0
+        }
+        
+        .page-head p {
+            margin: 0;
+            color: var(--muted)
+        }
+        
+        .section {
+            display: none
+        }
+        
+        .section.active {
+            display: block;
+            animation: fade .25s ease
+        }
+        
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(5px)
+            }
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px
+        }
+        
+        .grid.two {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+        
+        .card {
+            background: linear-gradient(145deg, #142d21, #0d2118);
+            border: 1px solid #ffffff13;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px #0002;
+            min-width: 0
+        }
+        
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--muted);
+            font-size: .84rem;
+            gap: 8px
+        }
+        
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #234a34;
+            color: var(--green);
+            font-size: 1.25rem
+        }
+        
+        .stat-value {
+            font-size: clamp(1.6rem, 3vw, 2.3rem);
+            font-weight: 900;
+            letter-spacing: -.04em;
+            margin: 13px 0 2px
+        }
+        
+        .stat-foot {
+            font-size: .78rem;
+            color: var(--muted)
+        }
+        
+        .accent {
+            color: var(--green)
+        }
+        
+        .gold {
+            color: var(--gold)
+        }
+        
+        .red {
+            color: var(--red)
+        }
+        
+        h2.section-title {
+            font-size: 1.12rem;
+            margin: 26px 0 12px
+        }
+        
+        .muted {
+            color: var(--muted)
+        }
+        
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px
+        }
+        
+        .panel-head h3 {
+            margin: 0;
+            font-size: 1rem
+        }
+        
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 99px;
+            padding: 5px 10px;
+            font-size: .75rem;
+            font-weight: 800;
+            background: #214b36;
+            color: var(--mint)
+        }
+        
+        .pill.warn {
+            background: #554321;
+            color: #ffe2a0
+        }
+        
+        .pill.bad {
+            background: #542b30;
+            color: #ffc3c3
+        }
+        
+        .pill.neutral {
+            background: #25362d;
+            color: #c3d8cb
+        }
+        
+        .flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px
+        }
+        
+        .flow-step {
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: #0b1e15
+        }
+        
+        .flow-step b {
+            display: block;
+            color: var(--green);
+            margin-bottom: 5px
+        }
+        
+        .flow-step span {
+            font-size: .82rem;
+            color: var(--muted)
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 12px 0
+        }
+        
+        .toolbar>* {
+            flex: 1;
+            min-width: 140px
+        }
+        
+        .table-wrap {
+            overflow: auto
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px
+        }
+        
+        th,
+        td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid #ffffff12;
+            vertical-align: middle
+        }
+        
+        th {
+            color: var(--muted);
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+        
+        td {
+            font-size: .9rem
+        }
+        
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 24px
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px
+        }
+        
+        .form-grid .field {
+            margin: 0
+        }
+        
+        .form-grid .wide {
+            grid-column: 1/-1
+        }
+        
+        .progress {
+            height: 9px;
+            border-radius: 99px;
+            background: #1b3526;
+            overflow: hidden
+        }
+        
+        .progress div {
+            height: 100%;
+            background: linear-gradient(90deg, #36c979, var(--green));
+            border-radius: 99px;
+            transition: width .3s
+        }
+        
+        .bin-area {
+            display: flex;
+            gap: 26px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+        
+        .bin-visual {
+            height: 205px;
+            width: 130px;
+            border: 4px solid #6ab68a;
+            border-top-width: 3px;
+            border-radius: 8px 8px 18px 18px;
+            position: relative;
+            overflow: hidden;
+            background: #091c12
+        }
+        
+        .bin-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, #238e4d, #69f0ae);
+            transition: height .4s
+        }
+        
+        .bin-percent {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-shadow: 0 2px 10px #000
+        }
+        
+        .bin-controls {
+            flex: 1;
+            min-width: 220px
+        }
+        
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 14px;
+            height: 220px;
+            border-bottom: 1px solid var(--line);
+            padding: 12px 10px 0
+        }
+        
+        .chart-col {
+            flex: 1;
+            min-width: 25px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 7px
+        }
+        
+        .chart-bar {
+            width: min(48px, 75%);
+            min-height: 3px;
+            border-radius: 8px 8px 0 0;
+            background: linear-gradient(180deg, var(--green), #238e4d);
+            transition: height .3s
+        }
+        
+        .chart-label {
+            font-size: .75rem;
+            color: var(--muted);
+            text-align: center
+        }
+        
+        .legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: .8rem;
+            color: var(--muted);
+            margin-top: 10px
+        }
+        
+        .dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--green);
+            margin-right: 5px
+        }
+        
+        .alert-item {
+            display: flex;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid #ffffff12
+        }
+        
+        .alert-item:last-child {
+            border-bottom: 0
+        }
+        
+        .alert-symbol {
+            font-size: 1.3rem
+        }
+        
+        .alert-item b {
+            display: block
+        }
+        
+        .alert-item small {
+            color: var(--muted)
+        }
+        
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 10;
+            background: #d9ffe9;
+            color: #052416;
+            padding: 13px 18px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            font-weight: 800;
+            max-width: min(380px, 90vw);
+            animation: fade .2s
+        }
+        
+        .footer-note {
+            font-size: .78rem;
+            color: #789a85;
+            margin-top: 28px
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px solid #ffffff12
+        }
+        
+        .settings-row:last-child {
+            border-bottom: 0
+        }
+        
+        @media(max-width:1050px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+            .layout {
+                grid-template-columns: 190px minmax(0, 1fr)
+            }
+            .form-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+            .auth {
+                gap: 30px;
+                padding: 30px
+            }
+        }
+        
+        @media(max-width:720px) {
+            .auth {
+                grid-template-columns: 1fr;
+                padding: 24px 16px;
+                gap: 28px
+            }
+            .brand-side h1 {
+                font-size: 3rem
+            }
+            .brand-side p {
+                font-size: .95rem
+            }
+            .auth-card {
+                max-width: none
+            }
+            .layout {
+                grid-template-columns: 1fr
+            }
+            .sidebar {
+                min-height: 0;
+                display: flex;
+                gap: 5px;
+                overflow: auto;
+                padding: 9px;
+                border-right: 0;
+                border-bottom: 1px solid #ffffff12;
+                position: sticky;
+                top: 65px;
+                background: #071711;
+                z-index: 4
+            }
+            .nav-label {
+                display: none
+            }
+            .nav {
+                white-space: nowrap;
+                width: auto;
+                margin: 0;
+                padding: 10px 12px
+            }
+            .nav span {
+                width: auto;
+                margin-right: 5px
+            }
+            .main {
+                padding: 18px 14px
+            }
+            .flow {
+                grid-template-columns: repeat(2, 1fr)
+            }
+            .topbar {
+                padding: 12px 14px
+            }
+            .topbar .logo {
+                font-size: .78rem
+            }
+            .user-pill .user-name {
+                display: none
+            }
+        }
+        
+        @media(max-width:460px) {
+            .grid,
+            .grid.two {
+                grid-template-columns: 1fr
+            }
+            .form-grid {
+                grid-template-columns: 1fr
+            }
+            .form-grid .wide {
+                grid-column: auto
+            }
+            .flow {
+                grid-template-columns: 1fr 1fr
+            }
+            .page-head {
+                align-items: flex-start
+            }
+            .stat-value {
+                font-size: 1.8rem
+            }
+            .bin-area {
+                justify-content: center
+            }
+            .bin-controls {
+                width: 100%
+            }
+        }
+        
+        @media(prefers-reduced-motion:reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none!important;
+                transition: none!important;
+                scroll-behavior: auto!important
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section id="loginPage" class="auth">
+        <div class="brand-side">
+            <div class="logo"><span class="logo-mark">♻</span> ECOHOSTEL <span class="tiny">/ HYDERABAD</span></div>
+            <div class="eyebrow" style="margin-top:34px">Waste less. Feed more. Grow greener.</div>
+            <h1>Turn food waste into <span>future.</span></h1>
+            <p>A polished hostel food-waste command center for recording daily waste, tracking collection, simulating smart bins, spotting trends, and coordinating action across students, mess teams, hostel management, and GHMC.</p>
+            <div class="feature-chips"><span class="chip">✦ Live dashboard</span><span class="chip">✦ Waste analytics</span><span class="chip">✦ Smart-bin alerts</span><span class="chip">✦ Exportable reports</span><span class="chip">✦ Multi-role demo</span></div>
+        </div>
+        <form id="loginForm" class="auth-card">
+            <div class="eyebrow">Welcome back</div>
+            <h2>Sign in</h2>
+            <p class="muted">Enter the demo workspace to manage your hostel's food-waste journey.</p>
+            <div class="field"><label for="loginName">Your name</label><input id="loginName" autocomplete="username" placeholder="e.g. Pranathi" required maxlength="50"></div>
+            <div class="field"><label for="loginRole">Workspace role</label><select id="loginRole"><option>Student</option><option>Mess Manager</option><option>Hostel Admin</option><option>GHMC / Collector</option></select></div>
+            <div class="field"><label for="loginPass">Demo password</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter any 4+ characters" minlength="4" required></div>
+            <button class="btn full" type="submit">Enter command center ↗</button>
+            <div id="loginMsg" class="auth-msg" role="status"></div>
+            <div class="demo"><b>Demo mode:</b> this single-file prototype uses local browser storage, not a real authentication server. Use any name and a password of at least 4 characters. Data stays in this browser profile.</div>
+        </form>
+    </section>
+    <div id="app" class="app hidden">
+        <header class="topbar">
+            <div class="logo"><span class="logo-mark">♻</span> ECOHOSTEL <span class="tiny">COMMAND CENTER</span></div>
+            <div class="top-actions"><span class="pill" id="todayPill">TODAY</span>
+                <div class="user-pill"><span class="avatar" id="avatar">E</span><span class="user-name" id="userLabel">Eco User</span></div><button class="btn secondary small" id="logoutBtn">Log out</button></div>
+        </header>
+        <div class="layout">
+            <aside class="sidebar">
+                <div class="nav-label">Workspace</div>
+                <button class="nav active" data-page="dashboard"><span>◈</span> Overview</button><button class="nav" data-page="records"><span>▤</span> Waste records</button><button class="nav" data-page="smartbin"><span>▥</span> Smart bins</button>
+                <button
+                    class="nav" data-page="analytics"><span>⌁</span> Analytics</button><button class="nav" data-page="actions"><span>✦</span> Action center</button><button class="nav" data-page="settings"><span>⚙</span> Settings & data</button>
+            </aside>
+            <main class="main">
+                <section id="page-dashboard" class="section active">
+                    <div class="page-head">
+                        <div>
+                            <div class="eyebrow">Sustainability overview</div>
+                            <h1>Good things grow here. <span class="accent" id="helloName"></span></h1>
+                            <p>Your hostel's waste story, at a glance.</p>
+                        </div><button class="btn" data-goto="records">＋ Add today's record</button></div>
+                    <div class="grid">
+                        <div class="card">
+                            <div class="stat-top">Waste generated <span class="stat-icon">♧</span></div>
+                            <div class="stat-value" id="statGen">0 kg</div>
+                            <div class="stat-foot">Across saved records</div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-top">Collected / processed <span class="stat-icon">↗</span></div>
+                            <div class="stat-value accent" id="statCol">0 kg</div>
+                            <div class="stat-foot" id="collectionRate">0% collection rate</div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-top">Still uncollected <span class="stat-icon">◷</span></div>
+                            <div class="stat-value gold" id="statRem">0 kg</div>
+                            <div class="stat-foot">Generated minus collected</div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-top">Current bin fill <span class="stat-icon">▥</span></div>
+                            <div class="stat-value" id="statBin">35%</div>
+                            <div class="stat-foot" id="binFoot">Simulated sensor</div>
+                        </div>
+                    </div>
+                    <h2 class="section-title">Your sustainability pipeline</h2>
+                    <div class="flow">
+                        <div class="flow-step"><b>01 · Students</b><span>Prevent plate waste and report leftovers.</span></div>
+                        <div class="flow-step"><b>02 · Mess team</b><span>Weigh, segregate, and record waste.</span></div>
+                        <div class="flow-step"><b>03 · Hostel admin</b><span>Review trends and schedule collection.</span></div>
+                        <div class="flow-step"><b>04 · GHMC / partners</b><span>Coordinate safe onward handling.</span></div>
+                    </div>
+                    <div class="grid two" style="margin-top:14px">
+                        <div class="card">
+                            <div class="panel-head">
+                                <h3>Recent waste records</h3><button class="btn secondary small" data-goto="records">View all ↗</button></div>
+                            <div id="recentRecords" class="table-wrap"></div>
+                        </div>
+                        <div class="card">
+                            <div class="panel-head">
+                                <h3>Action alerts</h3><span class="pill" id="alertCount">0 alerts</span></div>
+                            <div id="dashboardAlerts"></div>
+                        </div>
+                    </div>
+                    <p class="footer-note">Prototype note: sample figures and smart-bin readings are illustrative. Replace them with measured hostel data before presenting real-world impact.</p>
+                </section>
+                <section id="page-records" class="section">
+                    <div class="page-head">
+                        <div>
+                            <div class="eyebrow">Daily operations</div>
+                            <h1>Waste records</h1>
+                            <p>Log daily waste and maintain a searchable history.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="panel-head">
+                            <h3 id="recordFormTitle">Add a daily record</h3><span class="pill">One record per date</span></div>
+                        <form id="recordForm">
+                            <div class="form-grid">
+                                <div class="field"><label for="rDate">Date</label><input type="date" id="rDate" required></div>
+                                <div class="field"><label for="rGen">Generated (kg)</label><input type="number" id="rGen" min="0" step=".1" placeholder="e.g. 42.5" required></div>
+                                <div class="field"><label for="rCol">Collected (kg)</label><input type="number" id="rCol" min="0" step=".1" placeholder="e.g. 31" required></div>
+                                <div class="field"><label for="rType">Waste category</label><select id="rType"><option>Mixed food waste</option><option>Vegetable scraps</option><option>Cooked leftovers</option><option>Fruit peels</option><option>Plate waste</option><option>Tea / coffee waste</option></select></div>
+                                <div
+                                    class="field"><label for="rMeal">Meal / source</label><select id="rMeal"><option>All meals</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Special event</option></select></div>
+                            <div class="field"><label for="rZone">Hostel / block</label><input id="rZone" maxlength="60" placeholder="e.g. Block A"></div>
+                            <div class="field wide"><label for="rNote">Notes</label><textarea id="rNote" rows="2" maxlength="240" placeholder="Possible reason, action taken, or observations..."></textarea></div>
+                    </div>
+                    <div class="toolbar"><button class="btn" id="saveRecordBtn" type="submit">Save record</button><button class="btn secondary hidden" id="cancelEditBtn" type="button">Cancel edit</button><span id="recordMsg" class="msg" role="status"></span></div>
+                    </form>
+        </div>
+        <div class="card" style="margin-top:14px">
+            <div class="panel-head">
+                <h3>Record history</h3><button class="btn secondary small" id="exportCsvBtn">↓ Export CSV</button></div>
+            <div class="toolbar"><input id="searchRecords" placeholder="Search notes, category, block..."><select id="filterCategory"><option value="">All categories</option><option>Mixed food waste</option><option>Vegetable scraps</option><option>Cooked leftovers</option><option>Fruit peels</option><option>Plate waste</option><option>Tea / coffee waste</option></select>
+                <input
+                    id="filterDate" type="date" aria-label="Filter by date"></div>
+            <div class="table-wrap" id="allRecords"></div>
+        </div>
+        </section>
+        <section id="page-smartbin" class="section">
+            <div class="page-head">
+                <div>
+                    <div class="eyebrow">IoT demonstration</div>
+                    <h1>Smart-bin monitoring</h1>
+                    <p>Visualize fill levels and demonstrate collection alerts.</p>
+                </div><span class="pill warn">SIMULATED SENSOR</span></div>
+            <div class="card">
+                <div class="bin-area">
+                    <div class="bin-visual" role="img" id="binVisual" aria-label="Simulated smart bin">
+                        <div class="bin-fill" id="binFill" style="height:35%"></div>
+                        <div class="bin-percent" id="binPercent">35%</div>
+                    </div>
+                    <div class="bin-controls">
+                        <div class="eyebrow">Current bin status</div>
+                        <h2 id="binStatusText">Normal</h2>
+                        <p class="muted" id="binDescription">Capacity is within normal range.</p>
+                        <div class="progress">
+                            <div id="binProgress" style="width:35%"></div>
+                        </div>
+                        <div class="field"><label for="binInput">Simulated fill level (0–100%)</label><input type="range" id="binInput" min="0" max="100" value="35" style="width:100%;accent-color:var(--green)">
+                            <div class="panel-head"><span class="muted">0% · Empty</span><b class="accent" id="binSliderLabel">35%</b><span class="muted">100% · Full</span></div>
+                        </div>
+                        <div class="toolbar"><button class="btn" id="updateBinBtn">Update reading</button><button class="btn secondary" id="emptyBinBtn">Mark emptied</button></div>
+                        <div id="binMsg" class="msg" role="status"></div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="section-title">Bin status guide</h2>
+            <div class="grid">
+                <div class="card"><span class="pill">NORMAL · 0–69%</span>
+                    <h3 class="accent">Room available</h3>
+                    <p class="muted">Continue regular monitoring.</p>
+                </div>
+                <div class="card"><span class="pill warn">PLAN · 70–89%</span>
+                    <h3 class="gold">Plan collection</h3>
+                    <p class="muted">Notify the mess team to prepare pickup.</p>
+                </div>
+                <div class="card"><span class="pill bad">URGENT · 90–100%</span>
+                    <h3 class="red">Collection needed</h3>
+                    <p class="muted">Prioritize collection to avoid overflow.</p>
+                </div>
+            </div>
+        </section>
+        <section id="page-analytics" class="section">
+            <div class="page-head">
+                <div>
+                    <div class="eyebrow">Measure what matters</div>
+                    <h1>Analytics & impact</h1>
+                    <p>Use recorded data to understand trends, not just totals.</p>
+                </div><button class="btn secondary" id="exportReportBtn">↓ Download report CSV</button></div>
+            <div class="grid">
+                <div class="card">
+                    <div class="stat-top">Average generated / day</div>
+                    <div class="stat-value" id="avgGen">0 kg</div>
+                    <div class="stat-foot">Average of recorded days</div>
+                </div>
+                <div class="card">
+                    <div class="stat-top">Diversion / collection rate</div>
+                    <div class="stat-value accent" id="diversion">0%</div>
+                    <div class="stat-foot">Collected ÷ generated</div>
+                </div>
+                <div class="card">
+                    <div class="stat-top">Best recorded day</div>
+                    <div class="stat-value" id="bestDay">—</div>
+                    <div class="stat-foot" id="bestDaySub">Lowest remaining waste</div>
+                </div>
+                <div class="card">
+                    <div class="stat-top">Estimated meals saved</div>
+                    <div class="stat-value gold" id="mealsSaved">0</div>
+                    <div class="stat-foot">Illustrative estimate; editable assumption</div>
+                </div>
+            </div>
+            <div class="grid two" style="margin-top:14px">
+                <div class="card">
+                    <div class="panel-head">
+                        <h3>Generated vs collected</h3><span class="pill">Latest 7 records</span></div>
+                    <div id="trendChart" class="bar-chart"></div>
+                    <div class="legend"><span><i class="dot"></i>Generated</span><span><i class="dot" style="background:#ffd166"></i>Collected</span></div>
+                </div>
+                <div class="card">
+                    <div class="panel-head">
+                        <h3>Before / after comparison</h3><span class="pill">Scenario tool</span></div>
+                    <p class="muted tiny">Enter comparable daily figures. Example values are only for demonstration.</p>
+                    <div class="form-grid">
+                        <div class="field"><label for="beforeInput">Before (kg/day)</label><input type="number" id="beforeInput" min="0" step=".1" value="50"></div>
+                        <div class="field"><label for="afterInput">After (kg/day)</label><input type="number" id="afterInput" min="0" step=".1" value="35"></div>
+                        <div class="field"><label for="mealWeight">Avg meal portion (kg)</label><input type="number" id="mealWeight" min=".01" step=".01" value=".35"></div>
+                    </div>
+                    <div class="stat-value accent" id="reductionResult">30% reduction</div>
+                    <p class="muted tiny" id="mealsResult">About 43 portions/day equivalent. This is an estimate, not a verified meal count.</p>
+                    <div class="bar-chart" style="height:135px" id="comparisonChart"></div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:14px">
+                <div class="panel-head">
+                    <h3>Records by waste category</h3><span class="pill">Total kilograms</span></div>
+                <div id="categoryChart" class="bar-chart"></div>
+            </div>
+            <p class="footer-note">Analytics are calculated in this browser from your saved records. “Collected” is a tracking metric and does not by itself prove composting, recycling, or donation.</p>
+        </section>
+        <section id="page-actions" class="section">
+            <div class="page-head">
+                <div>
+                    <div class="eyebrow">From data to action</div>
+                    <h1>Action center</h1>
+                    <p>Prioritize next steps based on the information entered.</p>
+                </div><button class="btn secondary" id="refreshAlertsBtn">↻ Refresh alerts</button></div>
+            <div class="grid two">
+                <div class="card">
+                    <div class="panel-head">
+                        <h3>Smart recommendations</h3><span class="pill" id="actionAlertCount">0 items</span></div>
+                    <div id="actionAlerts"></div>
+                </div>
+                <div class="card">
+                    <h3>Suggested weekly checklist</h3>
+                    <p class="muted tiny">Tick items as your team completes them. Checklist state is saved locally.</p>
+                    <div id="checklist"></div>
+                    <div class="toolbar"><button class="btn secondary small" id="resetChecklistBtn">Reset checklist</button></div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:14px">
+                <h3>Stakeholder responsibilities</h3>
+                <div class="settings-row">
+                    <div><b>Students</b>
+                        <div class="tiny">Take only what you can eat; report excess food patterns.</div>
+                    </div><span class="pill">Prevent</span></div>
+                <div class="settings-row">
+                    <div><b>Mess team</b>
+                        <div class="tiny">Weigh waste consistently, segregate safely, and log quantities.</div>
+                    </div><span class="pill">Measure</span></div>
+                <div class="settings-row">
+                    <div><b>Hostel management</b>
+                        <div class="tiny">Review weekly trends and coordinate pickup schedules.</div>
+                    </div><span class="pill warn">Coordinate</span></div>
+                <div class="settings-row">
+                    <div><b>GHMC / authorized partners</b>
+                        <div class="tiny">Confirm local procedures and appropriate downstream handling.</div>
+                    </div><span class="pill">Process</span></div>
+            </div>
+        </section>
+        <section id="page-settings" class="section">
+            <div class="page-head">
+                <div>
+                    <div class="eyebrow">Your workspace</div>
+                    <h1>Settings & data</h1>
+                    <p>Manage local demo data and export a backup.</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Workspace preferences</h3>
+                <div class="settings-row">
+                    <div><b>Workspace name</b>
+                        <div class="tiny">Shown in this browser session.</div>
+                    </div>
+                    <div style="max-width:300px;width:50%"><input id="hostelName" class="field" style="width:100%;background:#071711;border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--text)" value="EcoHostel · Hyderabad"></div>
+                </div>
+                <div class="settings-row">
+                    <div><b>Meal portion assumption</b>
+                        <div class="tiny">Used only for illustrative portion-equivalent calculations.</div>
+                    </div><span class="pill">Editable in Analytics</span></div>
+                <div class="settings-row">
+                    <div><b>Data storage</b>
+                        <div class="tiny">Saved in this browser using localStorage; not synced to other devices.</div>
+                    </div><span class="pill">Local only</span></div>
+                <div class="toolbar"><button class="btn" id="saveSettingsBtn">Save preferences</button><button class="btn secondary" id="backupBtn">Export JSON backup</button><label class="btn secondary" for="importFile" style="display:inline-flex;align-items:center;margin:0">Import backup<input type="file" id="importFile" accept=".json,application/json" class="hidden"></label></div>
+                <div
+                    id="settingsMsg" class="msg" role="status"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+        <h3>Danger zone</h3>
+        <p class="muted">This permanently clears records and checklist data from this browser's EcoHostel demo.</p><button class="btn danger" id="clearDataBtn">Clear all demo data</button></div>
+    <p class="footer-note">Security note: the login screen is a front-end demonstration, not production authentication. Do not enter a real password or sensitive personal information. For a deployed real system, add a secure backend, database, password hashing, server-side
+        authorization, and audited access controls.</p>
+    </section>
+    </main>
+    </div>
+    </div>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <script>
+        'use strict';
+        const KEY = 'ecohostel_command_center_v2';
+        const $ = id => document.getElementById(id);
+        const today = () => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+        };
+        const fmt = n => (Math.round((Number(n) || 0) * 10) / 10).toLocaleString('en-IN');
+        const esc = s => String(s ? ? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[c]));
+        const initial = () => ({
+            records: [],
+            bin: 35,
+            checklist: {},
+            hostelName: 'EcoHostel · Hyderabad',
+            user: null,
+            mealWeight: .35
+        });
+        let data = initial(),
+            editDate = null,
+            toastTimer;
+        try {
+            const saved = JSON.parse(localStorage.getItem(KEY));
+            if (saved && Array.isArray(saved.records)) data = {...initial(),
+                ...saved
+            }
+        } catch (e) {}
+
+        function persist() {
+            try {
+                localStorage.setItem(KEY, JSON.stringify(data))
+            } catch (e) {
+                notify('Browser storage is unavailable. Export a backup to preserve your data.')
+            }
+        }
+
+        function notify(msg) {
+            $('toast').textContent = msg;
+            $('toast').classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => $('toast').classList.add('hidden'), 2800)
+        }
+
+        function setMessage(id, msg, good = true) {
+            $(id).textContent = msg;
+            $(id).style.color = good ? 'var(--green)' : 'var(--red)'
+        }
+
+        function totals() {
+            return data.records.reduce((t, r) => {
+                t.gen += r.gen;
+                t.col += r.col;
+                return t
+            }, {
+                gen: 0,
+                col: 0
+            })
+        }
+
+        function remaining(r) {
+            return Math.max(0, r.gen - r.col)
+        }
+
+        function binInfo(v) {
+            return v >= 90 ? {
+                label: 'Urgent · Full',
+                cls: 'bad',
+                desc: 'Collection should be prioritized to avoid overflow.'
+            } : v >= 70 ? {
+                label: 'Plan collection',
+                cls: 'warn',
+                desc: 'The bin is getting full. Coordinate a pickup.'
+            } : {
+                label: 'Normal',
+                cls: '',
+                desc: 'Capacity is within the normal monitoring range.'
+            }
+        }
+
+        function enterApp(user, role) {
+            data.user = {
+                name: user,
+                role
+            };
+            persist();
+            $('loginPage').classList.add('hidden');
+            $('app').classList.remove('hidden');
+            $('userLabel').textContent = user + ' · ' + role;
+            $('avatar').textContent = (user.trim()[0] || 'E').toUpperCase();
+            $('helloName').textContent = user + '!';
+            $('todayPill').textContent = new Date().toLocaleDateString('en-IN', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short'
+            });
+            $('hostelName').value = data.hostelName || 'EcoHostel · Hyderabad';
+            refreshAll();
+            showPage('dashboard')
+        }
+        $('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const name = $('loginName').value.trim(),
+                pass = $('loginPass').value;
+            if (name.length < 1 || pass.length < 4) {
+                $('loginMsg').textContent = 'Enter a name and a demo password with at least 4 characters.';
+                return
+            }
+            sessionStorage.setItem('ecohostel_demo_session', '1');
+            enterApp(name, $('loginRole').value)
+        });
+        $('logoutBtn').onclick = () => {
+            data.user = null;
+            persist();
+            sessionStorage.removeItem('ecohostel_demo_session');
+            $('app').classList.add('hidden');
+            $('loginPage').classList.remove('hidden');
+            $('loginPass').value = '';
+            $('loginMsg').textContent = 'You have safely left the demo workspace.'
+        };
+
+        function showPage(page) {
+            document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'page-' + page));
+            document.querySelectorAll('.nav').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+            if (page === 'analytics') renderAnalytics();
+            if (page === 'actions') renderActions();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            })
+        }
+        document.querySelectorAll('.nav').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+        document.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.goto)));
+
+        function refreshAll() {
+            renderDashboard();
+            renderRecords();
+            renderBin();
+            renderAnalytics();
+            renderActions()
+        }
+
+        function renderDashboard() {
+            const t = totals(),
+                rem = t.gen - t.col,
+                rate = t.gen ? t.col / t.gen * 100 : 0;
+            $('statGen').textContent = fmt(t.gen) + ' kg';
+            $('statCol').textContent = fmt(t.col) + ' kg';
+            $('statRem').textContent = fmt(rem) + ' kg';
+            $('collectionRate').textContent = fmt(rate) + '% collection rate';
+            $('statBin').textContent = data.bin + '%';
+            $('binFoot').textContent = binInfo(data.bin).label;
+            const recent = [...data.records].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+            $('recentRecords').innerHTML = recent.length ? `<table><thead><tr><th>Date</th><th>Generated</th><th>Collected</th><th>Remaining</th></tr></thead><tbody>${recent.map(r=>`<tr><td>${esc(r.date)}</td><td>${fmt(r.gen)} kg</td><td>${fmt(r.col)} kg</td><td>${fmt(remaining(r))} kg</td></tr>`).join('')}</tbody></table>`:'<div class="empty">No records yet. Add your first daily measurement.</div>';
+const alerts=buildAlerts();$('alertCount').textContent=alerts.length+' items';$('dashboardAlerts').innerHTML=alerts.slice(0,3).map(alertHTML).join('')||'<div class="empty">No alerts right now. Nice work!</div>'}
+function renderRecords(){const list=[...data.records].sort((a,b)=>b.date.localeCompare(a.date));const search=$('searchRecords').value.toLowerCase(),cat=$('filterCategory').value,date=$('filterDate').value;const filtered=list.filter(r=>(!search||[r.note,r.category,r.zone,r.meal,r.date].join(' ').toLowerCase().includes(search))&&(!cat||r.category===cat)&&(!date||r.date===date));const html=filtered.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.category||'Mixed food waste')}</td><td>${fmt(r.gen)} kg</td><td>${fmt(r.col)} kg</td><td>${fmt(remaining(r))} kg</td><td>${esc(r.meal||'All meals')} · ${esc(r.zone||'—')}</td><td><button class="btn secondary small" data-edit="${esc(r.date)}">Edit</button> <button class="btn danger small" data-delete="${esc(r.date)}">Delete</button></td></tr>`).join('');$('allRecords').innerHTML=filtered.length?`<table><thead><tr><th>Date</th><th>Category</th><th>Generated</th><th>Collected</th><th>Remaining</th><th>Meal / Block</th><th>Actions</th></tr></thead><tbody>${html}</tbody></table>`:'<div class="empty">No matching records. Change your filters or add a record.</div>';document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editRecord(b.dataset.edit));document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deleteRecord(b.dataset.delete))}
+$('recordForm').addEventListener('submit',e=>{e.preventDefault();const date=$('rDate').value,gen=Number($('rGen').value),col=Number($('rCol').value);if(!date||$('rGen').value===''||$('rCol').value===''||!Number.isFinite(gen)||!Number.isFinite(col)||gen<0||col<0||col>gen){setMessage('recordMsg','Check the date and quantities. Values must be non-negative and collected cannot exceed generated.',false);return}const rec={date,gen,col,category:$('rType').value,meal:$('rMeal').value,zone:$('rZone').value.trim(),note:$('rNote').value.trim()};data.records=data.records.filter(r=>r.date!==date);data.records.push(rec);editDate=null;persist();resetRecordForm();refreshAll();setMessage('recordMsg','Record saved successfully.');notify('Waste record saved')});
+function resetRecordForm(){$('recordForm').reset();$('rDate').value=today();editDate=null;$('recordFormTitle').textContent='Add a daily record';$('saveRecordBtn').textContent='Save record';$('cancelEditBtn').classList.add('hidden')}
+function editRecord(date){const r=data.records.find(x=>x.date===date);if(!r)return;editDate=date;$('rDate').value=r.date;$('rGen').value=r.gen;$('rCol').value=r.col;$('rType').value=r.category||'Mixed food waste';$('rMeal').value=r.meal||'All meals';$('rZone').value=r.zone||'';$('rNote').value=r.note||'';$('recordFormTitle').textContent='Edit record · '+date;$('saveRecordBtn').textContent='Update record';$('cancelEditBtn').classList.remove('hidden');showPage('records');window.scrollTo({top:0,behavior:'smooth'})}
+$('cancelEditBtn').onclick=resetRecordForm;
+function deleteRecord(date){if(!confirm('Delete the record for '+date+'?'))return;data.records=data.records.filter(r=>r.date!==date);persist();refreshAll();notify('Record deleted')}
+['searchRecords','filterCategory','filterDate'].forEach(id=>$(id).addEventListener(id==='searchRecords'?'input':'change',renderRecords));
+function renderBin(){const v=Number(data.bin)||0,info=binInfo(v);$('binFill').style.height=v+'%';$('binPercent').textContent=v+'%';$('binProgress').style.width=v+'%';$('binInput').value=v;$('binSliderLabel').textContent=v+'%';$('binStatusText').textContent=info.label;$('binStatusText').className=info.cls==='bad'?'red':info.cls==='warn'?'gold':'accent';$('binDescription').textContent=info.desc;$('binVisual').setAttribute('aria-label','Simulated bin '+v+' percent full');$('statBin').textContent=v+'%'}
+$('binInput').oninput=()=>{$('binSliderLabel').textContent=$('binInput').value+'%'};
+$('updateBinBtn').onclick=()=>{data.bin=Number($('binInput').value);persist();renderBin();renderDashboard();renderActions();setMessage('binMsg','Simulated bin reading updated to '+data.bin+'%.');notify('Bin status updated')};
+$('emptyBinBtn').onclick=()=>{data.bin=0;persist();renderBin();renderDashboard();renderActions();setMessage('binMsg','Bin marked as emptied. This is a demo action.');notify('Bin marked empty')};
+function chartBars(container,items,maxOverride){const max=maxOverride||Math.max(1,...items.map(i=>i.value));$(container).innerHTML=items.length?items.map(i=>`<div class="chart-col"><b style="font-size:.75rem">${esc(i.top??fmt(i.value))}</b><div class="chart-bar" title="${esc(i.label)}: ${fmt(i.value)} kg" style="height:${Math.max(2,i.value/max*145)}px;${i.color?`background:${i.color}`:''}"></div><div class="chart-label">${esc(i.label)}</div></div>`).join(''):'<div class="empty">Add records to see a chart.</div>'}
+function renderAnalytics(){const t=totals(),count=data.records.length,rate=t.gen?t.col/t.gen*100:0;$('avgGen').textContent=fmt(count?t.gen/count:0)+' kg';$('diversion').textContent=fmt(rate)+'%';const best=[...data.records].sort((a,b)=>remaining(a)-remaining(b))[0];$('bestDay').textContent=best?best.date:'—';$('bestDaySub').textContent=best?fmt(remaining(best))+' kg remaining':'No records yet';const before=Number($('beforeInput').value),after=Number($('afterInput').value),weight=Number($('mealWeight').value)||.35;const diff=before-after,percent=before>0?diff/before*100:0;$('reductionResult').textContent=before>0?(percent>=0?fmt(percent)+'% reduction':fmt(-percent)+'% increase'):'Enter a before value above zero';$('mealsResult').textContent=before>0&&weight>0?'About '+fmt(Math.abs(diff)/weight)+' portion-equivalents/day '+(diff>=0?'avoided':'additional')+'. Estimate only, not a verified meal count.':'Enter valid values to estimate portion-equivalents.';$('mealsSaved').textContent=before>0&&weight>0&&diff>0?fmt(diff/weight):'0';chartBars('comparisonChart',[{label:'Before',value:Math.max(0,before),color:'#54735f'},{label:'After',value:Math.max(0,after)}],Math.max(1,before,after));const latest=[...data.records].sort((a,b)=>a.date.localeCompare(b.date)).slice(-7);$('trendChart').innerHTML=latest.length?latest.map(r=>`<div class="chart-col"><b style="font-size:.68rem">${fmt(r.gen)}</b><div style="display:flex;align-items:flex-end;gap:3px;height:145px"><div class="chart-bar" style="height:${Math.max(2,r.gen/Math.max(1,...latest.map(x=>x.gen))*140)}px"></div><div class="chart-bar" style="height:${Math.max(2,r.col/Math.max(1,...latest.map(x=>x.gen))*140)}px;background:linear-gradient(180deg,#ffd166,#b77c22)"></div></div><div class="chart-label">${esc(r.date.slice(5))}</div></div>`).join(''):'<div class="empty">Add daily records to build a trend.</div>';const cats={};data.records.forEach(r=>cats[r.category||'Mixed food waste']=(cats[r.category||'Mixed food waste']||0)+r.gen);chartBars('categoryChart',Object.entries(cats).map(([label,value])=>({label,value})))}
+['beforeInput','afterInput','mealWeight'].forEach(id=>$(id).addEventListener('input',renderAnalytics));
+function buildAlerts(){const alerts=[];if(data.bin>=90)alerts.push({level:'bad',icon:'🚨',title:'Urgent bin collection',body:'Simulated bin fill is '+data.bin+'%. Prioritize collection.'});else if(data.bin>=70)alerts.push({level:'warn',icon:'🟠',title:'Plan bin collection',body:'Simulated bin fill is '+data.bin+'%. Coordinate with the mess team.'});const t=totals();if(data.records.length&&t.gen>0&&t.col/t.gen<.5)alerts.push({level:'warn',icon:'📦',title:'Collection rate is below 50%',body:'Review collection arrangements and verify how waste is handled.'});if(data.records.length===0)alerts.push({level:'',icon:'📝',title:'Add your first measurement',body:'A few accurate daily records will unlock useful trends.'});if(data.records.length>=3){const recent=[...data.records].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);if(recent.length===3&&recent.every(r=>r.gen>0)&&recent[2].gen<recent[1].gen&&recent[1].gen<recent[0].gen)alerts.push({level:'',icon:'🌱',title:'Generated waste is trending upward',body:'Compare meals, attendance, and special events to understand the change.'})}return alerts}
+function alertHTML(a){return `<div class="alert-item"><div class="alert-symbol">${a.icon}</div><div><b>${esc(a.title)} ${a.level?`<span class="pill ${a.level}">${a.level==='bad'?'URGENT':'ACTION'}</span>`:''}</b><small>${esc(a.body)}</small></div></div>`}
+const checklistItems=['Record waste weights for today','Check and segregate food waste safely','Review the smart-bin fill reading','Discuss one waste-prevention idea with students','Confirm collection plan with the responsible team','Review weekly totals and update the project report'];
+function renderActions(){const alerts=buildAlerts();$('actionAlertCount').textContent=alerts.length+' items';$('actionAlerts').innerHTML=alerts.map(alertHTML).join('')||'<div class="empty">No action alerts right now.</div>';$('checklist').innerHTML=checklistItems.map((item,i)=>`<label style="display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #ffffff12;cursor:pointer"><input type="checkbox" data-check="${i}" ${data.checklist[i]?'checked':''} style="accent-color:var(--green);margin-top:5px"><span>${esc(item)}</span></label>`).join('');document.querySelectorAll('[data-check]').forEach(c=>c.onchange=()=>{data.checklist[c.dataset.check]=c.checked;persist()})}
+$('refreshAlertsBtn').onclick=()=>{renderActions();renderDashboard();notify('Recommendations refreshed')};
+$('resetChecklistBtn').onclick=()=>{if(!confirm('Reset the weekly checklist?'))return;data.checklist={};persist();renderActions()};
+function download(filename,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function exportCsv(){const headers=['Date','Category','Generated kg','Collected kg','Remaining kg','Meal','Block','Notes'];const rows=[...data.records].sort((a,b)=>a.date.localeCompare(b.date)).map(r=>[r.date,r.category,r.gen,r.col,remaining(r),r.meal,r.zone,r.note]);download('ecohostel-waste-records.csv',[headers,...rows].map(row=>row.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8');notify('CSV export prepared')}
+$('exportCsvBtn').onclick=exportCsv;$('exportReportBtn').onclick=exportCsv;
+$('backupBtn').onclick=()=>download('ecohostel-backup.json',JSON.stringify(data,null,2),'application/json');
+$('saveSettingsBtn').onclick=()=>{data.hostelName=$('hostelName').value.trim()||'EcoHostel · Hyderabad';persist();setMessage('settingsMsg','Workspace preferences saved.');notify('Preferences saved')};
+$('importFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!obj||!Array.isArray(obj.records)||!Number.isFinite(Number(obj.bin)))throw Error('Invalid backup');if(!confirm('Import backup and replace the current demo data?'))return;data={...initial(),...obj,records:obj.records};data.records=data.records.filter(r=>r&&typeof r.date==='string'&&Number.isFinite(Number(r.gen))&&Number.isFinite(Number(r.col))&&Number(r.gen)>=0&&Number(r.col)>=0&&Number(r.col)<=Number(r.gen)).map(r=>({...r,gen:Number(r.gen),col:Number(r.col)}));data.bin=Math.max(0,Math.min(100,Math.round(Number(data.bin))));persist();refreshAll();setMessage('settingsMsg','Backup imported.');notify('Backup imported')}catch(err){setMessage('settingsMsg','Could not import this file. Choose a valid EcoHostel JSON backup.',false)}finally{e.target.value=''}};
+$('clearDataBtn').onclick=()=>{if(!confirm('This will permanently delete all EcoHostel records and checklist data saved in this browser. Continue?'))return;const user=data.user;data=initial();data.user=user;persist();resetRecordForm();refreshAll();setMessage('settingsMsg','Demo data cleared.');notify('All demo data cleared')};
+if(sessionStorage.getItem('ecohostel_demo_session')==='1'&&data.user){$('loginName').value=data.user.name;enterApp(data.user.name,data.user.role)}else{$('rDate').value=today()}
+    </script>
+</body>
+
+</html>
